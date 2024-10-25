@@ -61,7 +61,6 @@ export const getAllJobs = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 export const GetAllJobsWithSearch = async (req, res) => {
   try {
     const { title, location, category } = req.query;
@@ -147,3 +146,18 @@ export const GetadminJobs = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// this is for the delete job 
+export const deleteJob = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const job = await Job.findByIdAndDelete(jobId);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+    return res.status(200).json({ message: "Job deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
