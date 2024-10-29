@@ -116,7 +116,6 @@ export const updateCompaniesDetails = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
-
 export const getAllCompanies = async (req, res) => {
   try {
     // Populate the 'createdBy' field with user details
@@ -147,16 +146,13 @@ export const deleteCompany = async (req, res) => {
 
 export const getCompanyById = async (req, res) => {
   const { id } = req.params; // Get the company ID from the request parameters
-
   try {
     // Find the company by ID
     const company = await Company.findById(id);
-
     // If no company is found with the provided ID, return a 404 error
     if (!company) {
       return res.status(404).json({ message: "Company not found" });
     }
-
     // Return the company details if found
     return res.status(200).json(company);
   } catch (error) {

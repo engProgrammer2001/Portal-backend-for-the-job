@@ -28,13 +28,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// const corsOptions = {
-//   origin: "https://job-front-end.vercel.app",
-//   //  origin: "https://skokka.org.in",
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// };
 app.use(cors());
 
 const PORT = process.env.PORT || 5454;

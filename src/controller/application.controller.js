@@ -28,30 +28,35 @@ export const applyForJob = async (req, res) => {
   try {
     const userId = req.id;
     const jobId = req.params.id;
-    
-    // Check if job ID is provided
+    console.log("Job ID:", jobId);
+    console.log("User ID:", userId);
+
     if (!jobId) {
       return res.status(400).json({ message: "Job Id is required" });
     }
 
-    // Check if user already applied for the job
     const alreadyApplied = await Application.findOne({
       applicants: userId,
       job: jobId,
     });
+    console.log("Already applied:", alreadyApplied);
+
     if (alreadyApplied) {
-      return res
-        .status(400)
-        .json({ message: "You have already applied for this job" });
+      return res.status(400).json({ message: "You have already applied for this job" });
     }
 
-    // Check if job exists
     const job = await Job.findById(jobId);
+    console.log("Job found:", job);
+
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    // Create new application
+    const resumePath = req.file ? req.file.path : null;
+    if (!resumePath) {
+      return res.status(400).json({ message: "Resume file is required" });
+    }
+
     const newApplication = await Application.create({
       applicants: userId,
       job: jobId,
@@ -64,7 +69,7 @@ export const applyForJob = async (req, res) => {
       category: req.body.category,
       status: req.body.status,
       applicantsImage: req.body.applicantsImage,
-      resume: req.file.path, // Save the file path in the application
+      resume: resumePath,
     });
 
     job.applications.push(newApplication._id);
@@ -75,10 +80,11 @@ export const applyForJob = async (req, res) => {
       applicationId: newApplication._id,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Server Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 export const getAllApplications = async (req, res) => {
   try {
     const userId = req.id;

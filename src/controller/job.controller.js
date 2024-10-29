@@ -133,7 +133,7 @@ export const getJobById = async (req, res) => {
 export const GetadminJobs = async (req, res) => {
   try {
     const adminId = req.id;
-    const jobs = await Job.find({ created_by: adminId }).populate("company");
+    const jobs = await Job.find({ created_by: adminId }).populate("company").populate("applications");
     if (!jobs) {
       return res.status(404).json({ message: "Jobs not found" });
     }
@@ -146,7 +146,6 @@ export const GetadminJobs = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 // this is for the delete job 
 export const deleteJob = async (req, res) => {
   try {
@@ -161,3 +160,5 @@ export const deleteJob = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+
