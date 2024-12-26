@@ -182,7 +182,7 @@ export const logout = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().sort({ createdAt: -1 });
     res.status(200).json(users);
   } catch (error) {
     console.error(error);

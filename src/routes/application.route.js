@@ -11,10 +11,8 @@ import {
   getAllApplicationsByEmployer,
 } from "../controller/application.controller.js";
 
-// router.get("/apply-for-job/:id", isAuthenticated, applyForJob);
 router.post(
   "/apply-for-job/:id",
-  isAuthenticated,
   upload.single("resume"),
   applyForJob
 );

@@ -12,7 +12,6 @@ const applicationSchema = new mongoose.Schema(
     applicants: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     applicantName: {
       type: String,
@@ -52,6 +51,7 @@ const applicationSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 
 // Compile the schema into a model
 const Application = mongoose.model("Application", applicationSchema);

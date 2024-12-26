@@ -7,7 +7,6 @@ const companySchema = new mongoose.Schema(
       type: String,
       default: "Job Provide Company",
       //   required: true,
-
     },
     companyTagLine: {
       type: String,
@@ -15,7 +14,8 @@ const companySchema = new mongoose.Schema(
     },
     companyLogo: {
       type: String,
-      default: "https://t4.ftcdn.net/jpg/04/18/10/09/360_F_418100923_V8L9ASbg9NpPdCMk210e3fHVoo07ypgJ.jpg",
+      default:
+        "https://t4.ftcdn.net/jpg/04/18/10/09/360_F_418100923_V8L9ASbg9NpPdCMk210e3fHVoo07ypgJ.jpg",
     },
     companyWebsite: {
       type: String,

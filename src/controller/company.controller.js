@@ -2,7 +2,8 @@ import multer from "multer";
 import path from "path";
 import Company from "../models/company.model.js";
 import User from "../models/user.model.js";
-// Set up multer for file storage
+
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -66,8 +67,7 @@ export const uploadLogo = upload.single("companyLogo");
 
 // Controller function to update company details
 export const updateCompaniesDetails = async (req, res) => {
-  const { id } = req.params; // Get the company ID from the request params
-  console.log("id", id);
+  const { id } = req.params; 
   const {
     companyName,
     companyTagLine,
@@ -116,6 +116,7 @@ export const updateCompaniesDetails = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
 export const getAllCompanies = async (req, res) => {
   try {
     // Populate the 'createdBy' field with user details
@@ -195,15 +196,12 @@ export const searchCompanies = async (req, res) => {
 // Controller function to show all company details for a user
 export const getUserWithCompanies = async (req, res) => {
   try {
-    const userId = req.id; // Assuming the user ID is available through isAuthenticated middleware
-    // console.log('userId', userId);
-    // Find the user by ID and populate the companies field to get full company details
-    const user = await User.findById(userId).populate("companies"); // Assumes companies is an array of ObjectId referring to Company model
+    const userId = req.id; 
+    const user = await User.findById(userId).populate("companies"); 
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     // Respond with user details including populated companies
     return res.status(200).json({
       _id: user._id,
@@ -212,7 +210,7 @@ export const getUserWithCompanies = async (req, res) => {
       email: user.email,
       avatar: user.avatar,
       role: user.role,
-      companies: user.companies, // This will now have full company details
+      companies: user.companies, 
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });

@@ -34,19 +34,18 @@ export const applyForJob = async (req, res) => {
     if (!jobId) {
       return res.status(400).json({ message: "Job Id is required" });
     }
+    
+    // const alreadyApplied = await Application.findOne({
+    //   applicants: userId,
+    //   job: jobId,
+    // });
+    // console.log("Already applied:", alreadyApplied);
 
-    const alreadyApplied = await Application.findOne({
-      applicants: userId,
-      job: jobId,
-    });
-    console.log("Already applied:", alreadyApplied);
-
-    if (alreadyApplied) {
-      return res.status(400).json({ message: "You have already applied for this job" });
-    }
+    // if (alreadyApplied) {
+    //   return res.status(400).json({ message: "You have already applied for this job" });
+    // }
 
     const job = await Job.findById(jobId);
-    console.log("Job found:", job);
 
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
@@ -56,7 +55,6 @@ export const applyForJob = async (req, res) => {
     if (!resumePath) {
       return res.status(400).json({ message: "Resume file is required" });
     }
-
     const newApplication = await Application.create({
       applicants: userId,
       job: jobId,
