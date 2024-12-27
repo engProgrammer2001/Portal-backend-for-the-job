@@ -6,12 +6,11 @@ import {
   getAllApplications,
   getApplicants,
   updateApplicationStatus,
-  upload,
   getTotalApplications,
   getAllApplicationsByEmployer,
 } from "../controller/application.controller.js";
 
-router.post("/apply-for-job/:id", upload.single("resume"), applyForJob);
+router.post("/apply-for-job/:id", applyForJob);
 router.get("/get-all-applications", isAuthenticated, getAllApplications);
 router.get("/get-applicants/:id", isAuthenticated, getApplicants);
 router.get("/get-total-applications", getTotalApplications);

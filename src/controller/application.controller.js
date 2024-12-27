@@ -1,61 +1,57 @@
 import Application from "../models/application.model.js";
 import Job from "../models/job.model.js";
-import multer from "multer";
-import path from "path";
 
-// Configure storage for multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/resumes"); // Directory to store resumes
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Unique filename
-  },
-});
-// Filter to accept only PDF files
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "application/pdf") {
-    cb(null, true);
-  } else {
-    cb(new Error("Only PDF files are allowed!"), false);
-  }
-};
-// Create the multer upload middleware
-export const upload = multer({ storage: storage, fileFilter: fileFilter });
-
-// This is resume upload ccode :
 export const applyForJob = async (req, res) => {
   try {
     const jobId = req.params.id;
     if (!jobId) {
       return res.status(400).json({ message: "Job ID is required" });
     }
+
     const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
-    const resumePath = req.file ? req.file.path : null;
-    if (!resumePath) {
-      return res.status(400).json({ message: "Resume file is required" });
+    const {
+      applicantName,
+      professionalTitle,
+      applicantLocation,
+      applicantNumber,
+      applicantEmail,
+      applicantMessage,
+      category,
+      applicantsImage,
+    } = req.body;
+
+    if (
+      !applicantName ||
+      !applicantLocation ||
+      !applicantNumber ||
+      !applicantEmail ||
+      !category
+    ) {
+      return res.status(400).json({
+        message: "All required fields must be provided: applicantName, applicantLocation, applicantNumber, applicantEmail, category.",
+      });
     }
-    const userId = req.user ? req.user.id : null; // Optional user ID if logged in
+
     const newApplication = await Application.create({
       job: jobId,
-      applicantName: req.body.applicantName,
-      professionalTitle: req.body.professionalTitle,
-      applicantLocation: req.body.applicantLocation,
-      applicantNumber: req.body.applicantNumber,
-      applicantEmail: req.body.applicantEmail,
-      applicantMessage: req.body.applicantMessage,
-      category: req.body.category,
+      applicantName,
+      professionalTitle,
+      applicantLocation,
+      applicantNumber,
+      applicantEmail,
+      applicantMessage,
+      category,
       status: req.body.status || "Pending",
-      applicantsImage: req.body.applicantsImage,
-      resume: resumePath,
-      user: userId, // Associate with logged-in user if available
+      applicantsImage,
+      applicants: req.user ? req.user.id : null,
     });
 
     job.applications.push(newApplication._id);
     await job.save();
+
     return res.status(200).json({
       message: "Application submitted successfully",
       applicationId: newApplication._id,
@@ -65,6 +61,7 @@ export const applyForJob = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const getAllApplications = async (req, res) => {
   try {
