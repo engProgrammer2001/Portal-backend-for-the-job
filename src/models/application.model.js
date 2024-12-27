@@ -51,7 +51,5 @@ const applicationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
-// Compile the schema into a model
 const Application = mongoose.model("Application", applicationSchema);
 export default Application;

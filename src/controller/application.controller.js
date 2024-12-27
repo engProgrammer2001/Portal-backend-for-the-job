@@ -66,7 +66,6 @@ export const applyForJob = async (req, res) => {
   }
 };
 
-
 export const getAllApplications = async (req, res) => {
   try {
     const userId = req.id;
