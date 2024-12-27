@@ -26,37 +26,20 @@ export const upload = multer({ storage: storage, fileFilter: fileFilter });
 // This is resume upload ccode :
 export const applyForJob = async (req, res) => {
   try {
-    const userId = req.id;
     const jobId = req.params.id;
-    console.log("Job ID:", jobId);
-    console.log("User ID:", userId);
-
     if (!jobId) {
-      return res.status(400).json({ message: "Job Id is required" });
+      return res.status(400).json({ message: "Job ID is required" });
     }
-    
-    // const alreadyApplied = await Application.findOne({
-    //   applicants: userId,
-    //   job: jobId,
-    // });
-    // console.log("Already applied:", alreadyApplied);
-
-    // if (alreadyApplied) {
-    //   return res.status(400).json({ message: "You have already applied for this job" });
-    // }
-
     const job = await Job.findById(jobId);
-
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
-
     const resumePath = req.file ? req.file.path : null;
     if (!resumePath) {
       return res.status(400).json({ message: "Resume file is required" });
     }
+    const userId = req.user ? req.user.id : null; // Optional user ID if logged in
     const newApplication = await Application.create({
-      applicants: userId,
       job: jobId,
       applicantName: req.body.applicantName,
       professionalTitle: req.body.professionalTitle,
@@ -65,14 +48,14 @@ export const applyForJob = async (req, res) => {
       applicantEmail: req.body.applicantEmail,
       applicantMessage: req.body.applicantMessage,
       category: req.body.category,
-      status: req.body.status,
+      status: req.body.status || "Pending",
       applicantsImage: req.body.applicantsImage,
       resume: resumePath,
+      user: userId, // Associate with logged-in user if available
     });
 
     job.applications.push(newApplication._id);
     await job.save();
-
     return res.status(200).json({
       message: "Application submitted successfully",
       applicationId: newApplication._id,
@@ -82,6 +65,7 @@ export const applyForJob = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const getAllApplications = async (req, res) => {
   try {
@@ -93,7 +77,7 @@ export const getAllApplications = async (req, res) => {
         options: { sort: { createdAt: -1 } },
         populate: { path: "company" },
         options: { sort: { createdAt: -1 } },
-        populate: { path: "applications"},
+        populate: { path: "applications" },
         options: { sort: { createdAt: -1 } },
       });
     if (!applications) {
@@ -160,13 +144,11 @@ export const updateApplicationStatus = async (req, res) => {
 // get total number of applications
 export const getTotalApplications = async (req, res) => {
   try {
-    const totalApplications = await Application.find().populate("job") ;
-    return res
-      .status(200)
-      .json({
-        message: "Total Applications fetched successfully",
-        totalApplications,
-      });
+    const totalApplications = await Application.find().populate("job");
+    return res.status(200).json({
+      message: "Total Applications fetched successfully",
+      totalApplications,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -178,7 +160,6 @@ export const getAllApplicationsByEmployer = async (req, res) => {
     // Find all jobs posted by this employer
     const jobsPostedByEmployer = await Job.find({ created_by: employerId });
 
-
     if (!jobsPostedByEmployer) {
       return res.status(404).json({
         message: "No jobs posted by this employer",
@@ -186,7 +167,7 @@ export const getAllApplicationsByEmployer = async (req, res) => {
     }
 
     // Get all job IDs posted by the employer
-    const jobIds = jobsPostedByEmployer.map(job => job._id);
+    const jobIds = jobsPostedByEmployer.map((job) => job._id);
 
     // Find all applications related to the jobs posted by this employer
     const applications = await Application.find({ job: { $in: jobIds } })

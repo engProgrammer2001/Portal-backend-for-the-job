@@ -34,7 +34,6 @@ const applicationSchema = new mongoose.Schema(
     },
     applicantMessage: {
       type: String,
-      required: true,
     },
     category: {
       type: String,
